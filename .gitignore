@@ -1,0 +1,45 @@
+# ===== Segredos e credenciais =====
+.env
+*.env
+src/api/local.settings.json
+credenciais.txt
+notas.txt
+
+# ===== Python =====
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
+.Python
+venv/
+env/
+ENV/
+.venv
+
+# ===== Azure Functions =====
+bin
+obj
+.python_packages/
+local.settings.json
+.azure/
+
+# ===== VS Code =====
+.vscode/
+*.code-workspace
+
+# ===== Sistema operacional =====
+.DS_Store
+Thumbs.db
+desktop.ini
+
+# ===== Logs =====
+*.log
+logs/
+
+# ===== Outputs temporários =====
+*.tmp
+*.bak
+
+# ===== Documentos baixados (pesados, opcional) =====
+# Descomente se quiser excluir os PDFs do repo:
+# documentos/bulas/*.pdf

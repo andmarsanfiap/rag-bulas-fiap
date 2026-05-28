@@ -1,0 +1,6 @@
+azure-functions==1.21.3
+openai==1.55.0
+httpx<0.28
+azure-search-documents==11.5.2
+azure-core==1.32.0
+azure-ai-inference==1.0.0b9
