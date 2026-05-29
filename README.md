@@ -391,3 +391,77 @@ Isso **preserva contexto semântico** dos chunks, melhor que chunking fixo por n
 
 ---
 
+---
+
+## 🏗️ Infrastructure as Code (IaC)
+
+Toda a infraestrutura Azure deste projeto pode ser provisionada automaticamente usando **Bicep**, a linguagem oficial da Microsoft para IaC.
+
+### 📁 Estrutura
+
+infra/
+├── main.bicep        # Template principal — descreve todos os recursos
+└── main.bicepparam   # Valores dos parâmetros (sufixo, região, sku)
+
+### 🛠️ O que é provisionado automaticamente
+
+| Recurso | Tipo |
+|---|---|
+| Azure AI Foundry | `Microsoft.CognitiveServices/accounts` |
+| Azure AI Search (tier Free) | `Microsoft.Search/searchServices` |
+| Storage Account | `Microsoft.Storage/storageAccounts` |
+| Container Blob `bulas-pdf` | `Microsoft.Storage/.../containers` |
+| Function App (Flex Consumption) | `Microsoft.Web/sites` |
+| App Settings (8 variáveis) | conectadas automaticamente ao Foundry e Search |
+
+⚠️ **Nota:** O deploy dos modelos (`text-embedding-3-small` e `gpt-4o`) ainda precisa ser feito manualmente no portal Foundry, pois depende de cota disponível na assinatura.
+
+### ▶️ Como usar
+
+#### 1. Validar o template (não faz deploy)
+
+```bash
+az bicep build --file infra/main.bicep
+```
+
+Compila o Bicep em ARM JSON e valida a sintaxe.
+
+#### 2. Provisionar a infraestrutura
+
+```bash
+# Criar resource group
+az group create --name rg-rag-bulas-iac --location eastus2
+
+# Fazer deploy do template
+az deployment group create \
+  --resource-group rg-rag-bulas-iac \
+  --template-file infra/main.bicep \
+  --parameters infra/main.bicepparam
+```
+
+⏱️ Provisionamento completo: ~5-10 minutos.
+
+#### 3. Personalizar parâmetros
+
+Edite `infra/main.bicepparam` para mudar:
+- **`suffix`** — sufixo único nos nomes dos recursos
+- **`location`** — região principal
+- **`searchLocation`** — região do AI Search
+- **`searchSku`** — `free`, `basic`, ou `standard`
+
+### 💡 Benefícios da abordagem IaC
+
+- ✅ **Reproduzível:** mesma infra em segundos, sem cliques manuais
+- ✅ **Versionável:** mudanças de infra ficam no Git, com histórico
+- ✅ **Documentação viva:** o `main.bicep` é a fonte da verdade sobre a arquitetura
+- ✅ **Multi-ambiente:** dá pra ter `dev.bicepparam`, `staging.bicepparam`, `prod.bicepparam`
+- ✅ **App Settings auto-conectadas:** as variáveis de ambiente do Function App são populadas automaticamente com endpoints e chaves dos outros recursos
+
+### 🧹 Limpeza
+
+Pra remover toda a infraestrutura provisionada:
+
+```bash
+az group delete --name rg-rag-bulas-iac --yes
+```
+
